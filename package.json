@@ -1,0 +1,35 @@
+{
+  "name": "fake-openai",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "fling dev",
+    "start": "fling dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "exercise": "node scripts/exercise.mjs"
+  },
+  "dependencies": {
+    "flingit": "^0.0.70",
+    "fzstd": "^0.1.1",
+    "marked": "^18.0.7",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "tailwindcss": "^4",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.1.10"
+  },
+  "fling": {
+    "projectName": "hgs9vc"
+  }
+}

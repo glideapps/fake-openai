@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  color: #213547;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: #f8f9fb;
+}
+
+/* Rendered-markdown styling for the Docs view (Tailwind's reset strips defaults). */
+.markdown {
+  color: #1e293b;
+  line-height: 1.65;
+  font-size: 15px;
+}
+.markdown h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.markdown h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.markdown h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+.markdown h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+}
+.markdown p {
+  margin: 0.75rem 0;
+}
+.markdown a {
+  color: #2563eb;
+  text-decoration: none;
+}
+.markdown a:hover {
+  text-decoration: underline;
+}
+.markdown ul,
+.markdown ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+.markdown ul {
+  list-style: disc;
+}
+.markdown ol {
+  list-style: decimal;
+}
+.markdown li {
+  margin: 0.25rem 0;
+}
+.markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background: #f1f5f9;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+.markdown pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.markdown pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+.markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  display: block;
+  overflow-x: auto;
+}
+.markdown th,
+.markdown td {
+  border: 1px solid #e2e8f0;
+  padding: 0.4rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.markdown th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+.markdown blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 1rem;
+  color: #475569;
+  margin: 1rem 0;
+}
+.markdown hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 2rem 0;
+}
+.markdown strong {
+  font-weight: 600;
+}
+.markdown em {
+  font-style: italic;
+}

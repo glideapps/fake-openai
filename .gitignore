@@ -1,0 +1,15 @@
+# Fling
+.fling/secrets
+.fling/data/
+.fling/.dev-bundle/
+
+.claude/settings.local.json
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Vite
+*.local
