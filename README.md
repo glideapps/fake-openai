@@ -340,6 +340,12 @@ session with four tabs:
 
 Tests drive the mock through the control API; the UI only observes.
 
+This documentation is served by the worker at **`/docs`** as a standalone
+server-rendered HTML page. Its content is generated from `README.md` at build
+time (see the readme plugin in `vite.config.ts`), so editing the README and
+redeploying updates the page — never edit `src/worker/readme-generated.ts` by
+hand.
+
 ---
 
 ## Development
@@ -354,8 +360,8 @@ npm run exercise   # drive the whole service against a running instance
 Project layout:
 
 ```
-src/worker/     backend: OAuth + model routes, streaming engine, store, D1 schema
-src/react-app/  read-only inspector UI (this documentation is rendered here too)
+src/worker/     backend: OAuth + model routes, /docs page, streaming engine, store, D1 schema
+src/react-app/  read-only inspector UI
 scripts/        exercise.mjs — end-to-end smoke/demo script
 ```
 

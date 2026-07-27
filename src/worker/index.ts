@@ -5,6 +5,7 @@
  */
 import { cron, db, migrate } from "flingit";
 import { registerControlRoutes } from "./routes-control.js";
+import { registerDocsRoutes } from "./routes-docs.js";
 import { registerOAuthRoutes } from "./routes-oauth.js";
 import { registerModelRoutes } from "./routes-model.js";
 import { deleteExpiredSessions } from "./store.js";
@@ -105,6 +106,7 @@ migrate("001_init", async () => {
 });
 
 registerControlRoutes();
+registerDocsRoutes();
 registerOAuthRoutes();
 registerModelRoutes();
 

@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import { api, type SessionSummary } from "./api";
 import { SessionDetail } from "./SessionDetail";
-import { Docs } from "./Docs";
 
-type Route = { kind: "list" } | { kind: "session"; key: string } | { kind: "docs" };
+type Route = { kind: "list" } | { kind: "session"; key: string };
 
 function readRoute(): Route {
-  const h = window.location.hash;
-  if (h === "#/docs") return { kind: "docs" };
-  const m = h.match(/^#\/sessions\/(sess_[0-9a-f]+)$/);
+  const m = window.location.hash.match(/^#\/sessions\/(sess_[0-9a-f]+)$/);
   if (m) return { kind: "session", key: m[1] };
   return { kind: "list" };
 }
@@ -27,15 +24,6 @@ function App() {
   };
   const navSession = (k: string | null) => go(k ? `#/sessions/${k}` : "");
 
-  const navLink = (label: string, target: string, active: boolean) => (
-    <button
-      onClick={() => go(target)}
-      className={`text-sm ${active ? "text-blue-700 font-semibold" : "text-slate-600 hover:text-slate-900"}`}
-    >
-      {label}
-    </button>
-  );
-
   return (
     <div className="min-h-screen text-slate-800">
       <header className="border-b border-slate-200 bg-white">
@@ -48,8 +36,13 @@ function App() {
               fake-openai
             </button>
             <nav className="flex items-center gap-4">
-              {navLink("Sessions", "", route.kind !== "docs")}
-              {navLink("Docs", "#/docs", route.kind === "docs")}
+              <button onClick={() => go("")} className="text-sm text-blue-700 font-semibold">
+                Sessions
+              </button>
+              {/* /docs is a server-rendered page, not an SPA route. */}
+              <a href="/docs" className="text-sm text-slate-600 hover:text-slate-900">
+                Docs
+              </a>
             </nav>
           </div>
           <span className="hidden md:inline text-sm text-slate-500">
@@ -58,9 +51,7 @@ function App() {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-6">
-        {route.kind === "docs" ? (
-          <Docs />
-        ) : route.kind === "session" ? (
+        {route.kind === "session" ? (
           <SessionDetail sessionKey={route.key} onBack={() => navSession(null)} />
         ) : (
           <SessionList onSelect={navSession} />
