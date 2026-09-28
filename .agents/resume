@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -z ${FLING_TOKEN:-} ]]; then
+  exit 0
+fi
+
+umask 077
+if [[ -n ${FLING_CONFIG_DIR:-} ]]; then
+  config_dir=$FLING_CONFIG_DIR
+elif [[ -n ${XDG_CONFIG_HOME:-} ]]; then
+  config_dir=$XDG_CONFIG_HOME/fling
+else
+  config_dir=$HOME/.config/fling
+fi
+
+mkdir -p -- "$config_dir"
+chmod 700 -- "$config_dir"
+tmp=$(mktemp "$config_dir/.token.XXXXXX")
+trap 'rm -f -- "$tmp"' EXIT
+printf '%s' "$FLING_TOKEN" > "$tmp"
+chmod 600 -- "$tmp"
+mv -f -- "$tmp" "$config_dir/token"

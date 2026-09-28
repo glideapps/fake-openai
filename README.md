@@ -29,6 +29,7 @@ Live instance: **https://fake-openai.flingit.run**
 - [Determinism, IDs, and JWTs](#determinism-ids-and-jwts)
 - [The inspector UI](#the-inspector-ui)
 - [Development](#development)
+- [Fling login in pi-orbs](#fling-login-in-pi-orbs)
 - [Deployment & security](#deployment--security)
 
 ---
@@ -367,6 +368,14 @@ scripts/        exercise.mjs — end-to-end smoke/demo script
 ```
 
 ---
+
+## Fling login in pi-orbs
+
+In the project config gear → **Secrets**, set `FLING_TOKEN` to the token from a
+completed Fling login (`~/.config/fling/token`). Do not commit the token. The
+`.agents/resume` hook installs it into each orb's Fling config on startup.
+Merge and push both `.agents` hooks so future orbs receive them; `.agents/setup`
+installs dependencies with `npm ci`.
 
 ## Deployment & security
 
