@@ -219,10 +219,10 @@ export function registerModelRoutes(): void {
       signal: c.req.raw.signal,
       holdOpen,
       logId,
-      onFinalize: async (aborted) => {
+      onFinalize: async (aborted, loggingFailure) => {
         await finalizeRequest(logId, {
           status: 200,
-          stopReason: aborted ? "aborted" : stopReason,
+          stopReason: loggingFailure ?? (aborted ? "aborted" : stopReason),
           aborted,
         });
       },

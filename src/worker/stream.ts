@@ -36,18 +36,23 @@ export interface StreamOptions {
   holdOpen?: boolean;
   logId: number;
   /** Called once when the stream ends (naturally or via abort). */
-  onFinalize: (aborted: boolean) => Promise<void>;
+  onFinalize: (aborted: boolean, loggingFailed?: "event_log_failed") => Promise<void>;
 }
 
 export function buildEventStream(events: EmitEvent[], opts: StreamOptions): ReadableStream<Uint8Array> {
   const enc = new TextEncoder();
   let aborted = false;
+  let loggingFailed = false;
   let finalized = false;
 
   const finalize = async () => {
     if (finalized) return;
     finalized = true;
-    await opts.onFinalize(aborted);
+    try {
+      await opts.onFinalize(aborted, loggingFailed ? "event_log_failed" : undefined);
+    } catch {
+      console.error(`Failed to finalize request log ${opts.logId}`);
+    }
   };
 
   return new ReadableStream<Uint8Array>({
@@ -65,7 +70,13 @@ export function buildEventStream(events: EmitEvent[], opts: StreamOptions): Read
             break;
           }
           controller.enqueue(enc.encode(frameEvent(ev.data)));
-          await appendRequestEvent(opts.logId, seq++, ev.data);
+          if (!loggingFailed) {
+            try {
+              await appendRequestEvent(opts.logId, seq++, ev.data);
+            } catch {
+              loggingFailed = true;
+            }
+          }
         }
         if (opts.holdOpen && !aborted) {
           await waitForAbort(opts.signal);

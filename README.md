@@ -133,10 +133,10 @@ A request-log entry looks like:
   "headers": { "...": "..." },        // includes chatgpt-account-id for round-trip asserts
   "body": { "model": "gpt-5.4", "input": [ ... ] },  // decompressed
   "matchedRuleIndex": 0,
-  "stopReason": "toolUse",            // stop | length | toolUse | error | aborted | truncated
+  "stopReason": "toolUse",            // stop | length | toolUse | error | aborted | truncated | event_log_failed
   "aborted": false,
   "finalized": true,
-  "events": [ /* every SSE event emitted, verbatim */ ]
+  "events": [ /* persisted SSE events; may be partial if event_log_failed */ ]
 }
 ```
 
@@ -187,7 +187,8 @@ POST /oai/:key/backend-api/codex/responses
 
 The handler decompresses the body (zstd or plain), matches the first unconsumed
 rule, and streams that rule's steps. WebSocket upgrades are refused, so the agent
-falls back to SSE automatically.
+falls back to SSE automatically. If an event-log insert fails, the scripted SSE
+still completes; `stopReason: "event_log_failed"` identifies the incomplete log.
 
 ---
 

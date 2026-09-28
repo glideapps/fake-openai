@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import zlib from "node:zlib";
 import { app, db } from "flingit";
 import { runMigrations } from "flingit/runtime/migrate";
@@ -170,6 +170,37 @@ describe("model streaming — request logging", () => {
     expect(entry.events[0].type).toBe("response.created");
     expect(entry.events.at(-1).type).toBe("response.completed");
   });
+});
+
+it("delivers the terminal event despite a failed diagnostic insert", async () => {
+  const key = await newSession({
+    model: { rules: [{ match: { userMessage: "go" }, steps: [{ type: "text", content: "done" }] }] },
+  });
+  const prepare = db.prepare.bind(db);
+  const spy = vi.spyOn(db, "prepare").mockImplementation((sql) => {
+    const statement = prepare(sql);
+    if (!sql.startsWith("INSERT INTO request_events")) return statement;
+    const bind = statement.bind.bind(statement);
+    statement.bind = (...params: unknown[]) => {
+      if (params[1] === 1) {
+        statement.run = () => Promise.reject(new Error("D1 insert failed")) as never;
+      }
+      return bind(...params);
+    };
+    return statement;
+  });
+  try {
+    const res = await post(key, userReq("go"));
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain('"type":"response.completed"');
+  } finally {
+    spy.mockRestore();
+  }
+  const [entry] = await (await app.request(`/api/__mock__/sessions/${key}/requests`)).json();
+  expect(entry.events.map((event: { type: string }) => event.type)).toEqual(["response.created"]);
+  expect(entry.aborted).toBe(false);
+  expect(entry.finalized).toBe(true);
+  expect(entry.stopReason).toBe("event_log_failed");
 });
 
 describe("model streaming — default rule + no match", () => {
