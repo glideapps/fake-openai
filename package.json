@@ -27,7 +27,7 @@
     "tailwindcss": "^4",
     "typescript": "~5.9.3",
     "vite": "^7.3.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "fling": {
     "projectName": "hgs9vc"
