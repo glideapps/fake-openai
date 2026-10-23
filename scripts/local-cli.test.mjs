@@ -25,7 +25,7 @@ test("local CLI serves SQLite-backed routes without invoking cloudflared", { tim
 require("node:fs").writeFileSync(${JSON.stringify(sentinel)}, "unexpected tunnel");
 process.exit(1);
 `, { mode: 0o755 });
-  for (const name of ["src", "public", "index.html", "package.json", "vite.config.ts"]) {
+  for (const name of ["src", "public", "index.html", "package.json", "vite.config.ts", "README.md"]) {
     cpSync(join(root, name), join(directory, name), { recursive: true });
   }
   symlinkSync(join(root, "node_modules"), join(directory, "node_modules"), "dir");
@@ -44,7 +44,8 @@ process.exit(1);
       const timeout = setTimeout(() => reject(new Error("CLI readiness deadline\n" + output)), 30_000);
       const collect = (chunk) => {
         output += chunk;
-        if (output.includes("API server: http://localhost:" + backend)) {
+        if (output.includes("API server: http://localhost:" + backend) &&
+            output.includes("Local:") && output.includes("http://localhost:" + frontend + "/")) {
           clearTimeout(timeout);
           resolve();
         }
@@ -56,6 +57,9 @@ process.exit(1);
         reject(new Error("CLI exited " + code + "\n" + output));
       });
     });
+    const page = await fetch(`http://127.0.0.1:${frontend}/`);
+    assert.equal(page.status, 200, output);
+    assert.match(await page.text(), /<div id="root">/);
     const response = await fetch(`http://127.0.0.1:${backend}/api/__mock__/sessions`, {
       method: "POST", headers: { "content-type": "application/json" }, body: "{}",
     });
@@ -65,6 +69,7 @@ process.exit(1);
     const sessions = await fetch(`http://127.0.0.1:${backend}/api/__mock__/sessions`);
     assert.ok(JSON.stringify(await sessions.json()).includes(session.sessionKey));
     assert.equal(existsSync(sentinel), false);
+    assert.equal((output.match(/\[worker\] PID \d+/g) ?? []).length, 1, output);
   } finally {
     try {
       process.kill(-child.pid, "SIGTERM");

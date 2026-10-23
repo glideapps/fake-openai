@@ -16,6 +16,12 @@ test("cloudflared's floating binary installer is explicitly denied", () => {
   assert.equal(manifest.allowScripts?.cloudflared, false);
 });
 
+test("embedded README is current before the worker watcher starts", () => {
+  const readme = readFileSync(new URL("README.md", root), "utf8");
+  const generated = readFileSync(new URL("src/worker/readme-generated.ts", root), "utf8");
+  assert.ok(generated.endsWith(`export const README_MARKDOWN = ${JSON.stringify(readme)};\n`));
+});
+
 test("fling archive identity stays fixed", () => {
   const fling = lock.packages["node_modules/flingit"];
   assert.equal(fling.version, "0.0.70");
@@ -51,9 +57,9 @@ test("npm suppresses the denied registry hook, not unreviewed hooks (no internet
     if (!archive) { response.writeHead(404).end(); return; }
     if (request.url.endsWith(".tgz")) { response.end(archive); return; }
     response.setHeader("content-type", "application/json");
-    response.end(JSON.stringify({ name, "dist-tags": { latest: "0.0.0" }, versions: {
-      "0.0.0": { name, version: "0.0.0", scripts: { postinstall: "node hook.cjs" }, dist: {
-        tarball: `http://127.0.0.1:${registry.address().port}/${name}/-/${name}-0.0.0.tgz`,
+    response.end(JSON.stringify({ name, "dist-tags": { latest: "0.7.1" }, versions: {
+      "0.7.1": { name, version: "0.7.1", scripts: { postinstall: "node hook.cjs" }, dist: {
+        tarball: `http://127.0.0.1:${registry.address().port}/${name}/-/${name}-0.7.1.tgz`,
         integrity: "sha512-" + createHash("sha512").update(archive).digest("base64"),
       } },
     } }));
@@ -65,15 +71,15 @@ test("npm suppresses the denied registry hook, not unreviewed hooks (no internet
       const source = join(directory, name, "package");
       mkdirSync(source, { recursive: true });
       writeFileSync(join(source, "package.json"), JSON.stringify({
-        name, version: "0.0.0", scripts: { postinstall: "node hook.cjs" },
+        name, version: "0.7.1", scripts: { postinstall: "node hook.cjs" },
       }));
       writeFileSync(join(source, "hook.cjs"), 'require("node:fs").writeFileSync("hook-ran", "yes");');
       run("tar", ["-czf", join(directory, name + ".tgz"), "-C", join(directory, name), "package"]);
       archives.set(name, readFileSync(join(directory, name + ".tgz")));
-      dependencies[name] = "0.0.0";
+      dependencies[name] = "0.7.1";
     }
     writeFileSync(join(directory, "package.json"), JSON.stringify({
-      name: "install-policy-fixture", version: "0.0.0", dependencies,
+      name: "install-policy-fixture", version: "0.7.1", dependencies,
       allowScripts: manifest.allowScripts,
     }));
     const npmArgs = ["--no-audit", "--no-fund",
