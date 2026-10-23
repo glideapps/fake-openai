@@ -6,8 +6,9 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
+import { stripVTControlCharacters } from "node:util";
 
-test("local CLI serves SQLite-backed routes without invoking cloudflared", { timeout: 45_000 }, async () => {
+test("local CLI serves SQLite-backed routes without invoking cloudflared", { timeout: 45_000 }, async (t) => {
   const root = new URL("../", import.meta.url).pathname;
   const directory = mkdtempSync(join(tmpdir(), "fake-openai-local-cli-"));
   const ports = [];
@@ -31,7 +32,7 @@ process.exit(1);
   symlinkSync(join(root, "node_modules"), join(directory, "node_modules"), "dir");
   await Promise.all(ports.map((server) => new Promise((resolve) => server.close(resolve))));
   const child = spawn(process.execPath, [
-    join(root, "node_modules/flingit/dist/cli/index.js"), "--cli", "dev",
+    join(root, "node_modules/flingit/dist/cli/index.js"), "--cli", "dev", "--verbose",
     "--be-port", String(backend), "--fe-port", String(frontend),
   ], {
     cwd: directory, detached: true, stdio: ["ignore", "pipe", "pipe"],
@@ -44,8 +45,9 @@ process.exit(1);
       const timeout = setTimeout(() => reject(new Error("CLI readiness deadline\n" + output)), 30_000);
       const collect = (chunk) => {
         output += chunk;
-        if (output.includes("API server: http://localhost:" + backend) &&
-            output.includes("Local:") && output.includes("http://localhost:" + frontend + "/")) {
+        const plain = stripVTControlCharacters(output);
+        if (plain.includes("API server: http://localhost:" + backend) &&
+            plain.includes("Local:") && plain.includes("http://localhost:" + frontend + "/")) {
           clearTimeout(timeout);
           resolve();
         }
@@ -57,7 +59,7 @@ process.exit(1);
         reject(new Error("CLI exited " + code + "\n" + output));
       });
     });
-    const page = await fetch(`http://127.0.0.1:${frontend}/`);
+    const page = await fetch(`http://localhost:${frontend}/`);
     assert.equal(page.status, 200, output);
     assert.match(await page.text(), /<div id="root">/);
     const response = await fetch(`http://127.0.0.1:${backend}/api/__mock__/sessions`, {
@@ -70,6 +72,9 @@ process.exit(1);
     assert.ok(JSON.stringify(await sessions.json()).includes(session.sessionKey));
     assert.equal(existsSync(sentinel), false);
     assert.equal((output.match(/\[worker\] PID \d+/g) ?? []).length, 1, output);
+  } catch (error) {
+    t.diagnostic(output);
+    throw error;
   } finally {
     try {
       process.kill(-child.pid, "SIGTERM");
