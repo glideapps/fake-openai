@@ -66,7 +66,11 @@ process.exit(1);
     assert.ok(JSON.stringify(await sessions.json()).includes(session.sessionKey));
     assert.equal(existsSync(sentinel), false);
   } finally {
-    process.kill(-child.pid, "SIGTERM");
+    try {
+      process.kill(-child.pid, "SIGTERM");
+    } catch (error) {
+      if (error.code !== "ESRCH") throw error;
+    }
     await closed;
     rmSync(directory, { recursive: true, force: true });
   }

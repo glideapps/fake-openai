@@ -76,8 +76,11 @@ test("npm suppresses the denied registry hook, not unreviewed hooks (no internet
       name: "install-policy-fixture", version: "0.0.0", dependencies,
       allowScripts: manifest.allowScripts,
     }));
-    await promisify(execFile)("npm", ["install", "--no-audit", "--no-fund", "--ignore-scripts=false",
-      "--registry=http://127.0.0.1:" + registry.address().port, "--cache=" + join(directory, "cache")],
+    const npmArgs = ["--no-audit", "--no-fund",
+      "--registry=http://127.0.0.1:" + registry.address().port, "--cache=" + join(directory, "cache")];
+    await promisify(execFile)("npm", ["install", "--package-lock-only", "--ignore-scripts", ...npmArgs],
+      { cwd: directory, timeout: 30_000 });
+    await promisify(execFile)("npm", ["ci", "--ignore-scripts=false", ...npmArgs],
       { cwd: directory, timeout: 30_000 });
     assert.equal(existsSync(join(directory, "node_modules/cloudflared/hook-ran")), false);
     assert.equal(existsSync(join(directory, "node_modules/required-hook/hook-ran")), true);
