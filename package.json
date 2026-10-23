@@ -9,10 +9,12 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "exercise": "node scripts/exercise.mjs"
+    "exercise": "node scripts/exercise.mjs",
+    "test:dependencies": "node --test scripts/dependencies.test.mjs scripts/setup.test.mjs",
+    "test:local": "node --test scripts/local-cli.test.mjs"
   },
   "dependencies": {
-    "flingit": "^0.0.70",
+    "flingit": "0.0.70",
     "fzstd": "^0.1.1",
     "marked": "^18.0.7",
     "react": "^19.2.4",
@@ -26,10 +28,17 @@
     "@vitejs/plugin-react": "^5.1.4",
     "tailwindcss": "^4",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
-    "vitest": "^4.1.10"
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
   },
   "fling": {
     "projectName": "hgs9vc"
-  }
+  },
+  "allowScripts": {
+    "cloudflared": false
+  },
+  "engines": {
+    "npm": ">=11.19.1"
+  },
+  "packageManager": "npm@11.19.1"
 }

@@ -352,6 +352,34 @@ hand.
 
 ## Development
 
+Use **npm >=11.19.1** (with a supported Node 22 release or newer). Older npm
+ignores `allowScripts`; `.npmrc` enables `engine-strict` so ordinary `npm ci`
+rejects it before dependency hooks. Do not bypass this with `--force`, policy
+overrides, or `--dangerously-allow-all-scripts`. The orb setup hook upgrades
+older npm to 11.19.1 before installing; it does not change Node.
+
+`allowScripts.cloudflared: false` disables the npm wrapper's **install-time**
+download of an unchecksummed, floating `latest` binary. Other lifecycle hooks
+still run, including required SQLite/esbuild setup; this is not an allowlist.
+Local `fling --cli dev` needs no tunnel. Explicit tunnel commands may separately
+download/run cloudflared and are **not** covered by this installation guarantee.
+
+Security refresh (2026-10-22): Vite stays on 7.x and Vitest on 4.x; Hono and
+affected CSS/browser tooling are updated within their owners' ranges. Fling
+remains exactly 0.0.70 with unchanged archive URL/integrity. Both full and
+production npm audits retain one low-severity advisory:
+[esbuild Windows dev-server file read](https://github.com/advisories/GHSA-g7r4-m6w7-qqqr).
+Its fixed 0.28.1 is outside Fling's `^0.27.2` range; no override is imposed.
+Fling's local dev path uses esbuild context/watch/rebuild, not `serve`; the
+Linux local-CLI fixture does not exercise the affected Windows server.
+This is not a clean-audit or general Windows safety claim.
+
+`npm run test:dependencies` checks lock identity, setup ordering and npm policy
+using harmless hooks behind a loopback registry (no internet). It verifies an
+unreviewed hook runs while cloudflared's denied hook does not.
+`npm run test:local` exercises a temporary SQLite-backed local CLI with a
+cloudflared invocation sentinel.
+
 ```bash
 npm start          # fling dev — worker on :3210, frontend on :5174
 npm test           # vitest: unit + route-integration tests
