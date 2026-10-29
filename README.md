@@ -364,15 +364,11 @@ still run, including required SQLite/esbuild setup; this is not an allowlist.
 Local `fling --cli dev` needs no tunnel. Explicit tunnel commands may separately
 download/run cloudflared and are **not** covered by this installation guarantee.
 
-Security refresh (2026-10-22): Vite stays on 7.x and Vitest on 4.x; Hono and
-affected CSS/browser tooling are updated within their owners' ranges. Fling
-remains exactly 0.0.70 with unchanged archive URL/integrity. Both full and
-production npm audits retain one low-severity advisory:
+Vite stays on 7.x and Vitest on 4.x; Hono and affected CSS/browser tooling
+stay within their owners' ranges. Fling is pinned to 0.0.71, whose SQLite
+binding supports Node 26 and whose esbuild 0.28.2 includes the fix for
 [esbuild Windows dev-server file read](https://github.com/advisories/GHSA-g7r4-m6w7-qqqr).
-Its fixed 0.28.1 is outside Fling's `^0.27.2` range; no override is imposed.
-Fling's local dev path uses esbuild context/watch/rebuild, not `serve`; the
-Linux local-CLI fixture does not exercise the affected Windows server.
-This is not a clean-audit or general Windows safety claim.
+No dependency override is imposed.
 
 `npm run test:dependencies` checks lock identity, setup ordering and npm policy
 using harmless hooks behind a loopback registry (no internet). It verifies an
