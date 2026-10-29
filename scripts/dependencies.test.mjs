@@ -24,15 +24,15 @@ test("embedded README is current before the worker watcher starts", () => {
 
 test("fling archive identity stays fixed", () => {
   const fling = lock.packages["node_modules/flingit"];
-  assert.equal(fling.version, "0.0.70");
-  assert.equal(fling.resolved, "https://registry.npmjs.org/flingit/-/flingit-0.0.70.tgz");
-  assert.equal(fling.integrity, "sha512-OpjCWlRfDf7uvgYBHlNMzrAdSem7/iwe8T/K3wLaZqL/0XCf/vdNNn0yG+z4ELWhIEzmPz4UZZAYKhZ8xew84g==");
+  assert.equal(fling.version, "0.0.71");
+  assert.equal(fling.resolved, "https://registry.npmjs.org/flingit/-/flingit-0.0.71.tgz");
+  assert.equal(fling.integrity, "sha512-bfgwsKB5NlW5aMtaz64ZZpFlFAZCwHyPhwKHlUXTKpCUfG9WF569ibc9HXq+pL627voYm8bp96HlBbYiudyUlA==");
 });
 
 test("security refresh stays on maintained owner-compatible versions", () => {
   const minimums = {
     vite: "7.3.7", vitest: "4.1.12", "@vitest/mocker": "4.1.12",
-    hono: "4.13.13", browserslist: "4.29.4", "baseline-browser-mapping": "2.11.31",
+    hono: "4.13.14", browserslist: "4.29.4", "baseline-browser-mapping": "2.11.31",
     nanoid: "3.3.20", postcss: "8.5.31", "source-map-js": "1.2.2",
   };
   for (const [name, minimum] of Object.entries(minimums)) {

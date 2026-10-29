@@ -14,7 +14,7 @@
     "test:local": "node --test scripts/local-cli.test.mjs"
   },
   "dependencies": {
-    "flingit": "0.0.70",
+    "flingit": "0.0.71",
     "fzstd": "^0.1.1",
     "marked": "^18.0.7",
     "react": "^19.2.4",
